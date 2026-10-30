@@ -1,0 +1,140 @@
+{
+  "info": {
+    "_postman_id": "7a356391-2358-472d-872f-5fbf6a8bc819",
+    "name": "DevOps Student API - Lab Collection",
+    "description": "Postman Collection for Experiment 10: Manual and Automated API Testing of Flask Student REST APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. GET All Students",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/students",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students"]
+        },
+        "description": "Retrieve all students from the in-memory database."
+      },
+      "response": []
+    },
+    {
+      "name": "2. GET Student by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/students/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students", "1"]
+        },
+        "description": "Retrieve a single student by their unique ID."
+      },
+      "response": []
+    },
+    {
+      "name": "3. POST Add Student",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Anil\",\n    \"age\": 20,\n    \"department\": \"CSE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/students",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students"]
+        },
+        "description": "Create a new student entry (returns status 201)."
+      },
+      "response": []
+    },
+    {
+      "name": "4. PUT Update Student",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"name\": \"Anil Kumar\",\n    \"age\": 21,\n    \"department\": \"CSE\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3000/students/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students", "1"]
+        },
+        "description": "Update an existing student's details by ID."
+      },
+      "response": []
+    },
+    {
+      "name": "5. DELETE Student",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/students/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students", "1"]
+        },
+        "description": "Delete a student record by ID (returns status 200)."
+      },
+      "response": []
+    },
+    {
+      "name": "6. GET Non-Existent Student (404 Test)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/students/9999",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["students", "9999"]
+        },
+        "description": "Verify 404 Not Found response for non-existent student ID."
+      },
+      "response": []
+    },
+    {
+      "name": "7. GET Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:3000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["health"]
+        },
+        "description": "Check application health for Kubernetes / monitoring."
+      },
+      "response": []
+    }
+  ]
+}
