@@ -1,497 +1,215 @@
-# 🚀 DevOps Lab: Python & Cloud-Native Engineering
+# Python DevOps Lab
 
-[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0.3-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![pytest](https://img.shields.io/badge/Testing-pytest-0A9EDC?logo=pytest&logoColor=white)](https://docs.pytest.org/)
-[![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestration-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
-[![Terraform](https://img.shields.io/badge/IaC-Terraform-844FBA?logo=terraform&logoColor=white)](https://www.terraform.io/)
-[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+A Python version of the DevOps lab using Flask, pytest, Docker, Kubernetes, GitHub Actions, Postman and Terraform.
 
-Complete implementation of the **DevOps Engineering Lab Record (13 Experiments)** converted from Node.js/Express to **Python 3, Flask, pytest, Docker, Kubernetes, GitHub Actions CI/CD, and Terraform**.
-
----
-
-## 📑 Table of Experiments
-
-| # | Experiment | Tech Stack / Tool | Key Deliverable |
-|---|------------|-------------------|-----------------|
-| **1** | [CRUD REST APIs](#experiment-1--crud-rest-apis) | Python, Flask | Student REST API with GET, POST, PUT, DELETE |
-| **2** | [Git and GitHub](#experiment-2--git-and-github) | Git, GitHub | Repository initialization, commits, remotes, branches |
-| **3** | [Source Code Management](#experiment-3--source-code-management) | Git, `.gitignore` | Branch isolation, feature workflows, clean commits |
-| **4** | [Docker Commands](#experiment-4--docker-commands) | Docker CLI | Container lifecycle (`run`, `ps`, `logs`, `inspect`, `stats`, `stop`, `rm`) |
-| **5** | [Containerized Application](#experiment-5--containerized-application) | Docker, Python | Multi-stage slim `Dockerfile` for Flask on port 3000 |
-| **6** | [Docker + Kubernetes](#experiment-6--integrate-docker-and-kubernetes) | Kubernetes, kubectl | `deployment.yaml` and `service.yaml` (NodePort) |
-| **7** | [Kubernetes Scaling](#experiment-7--kubernetes-scaling) | Kubernetes | Replica scaling (`kubectl scale`, pod verification) |
-| **8** | [CI Environment](#experiment-8--github-actions-environment) | GitHub Actions | Environment exploration workflow (`environment.yml`) |
-| **9** | [Continuous Integration Pipeline](#experiment-9--continuous-integration-pipeline) | GitHub Actions, pytest, Docker | Automated testing & container build pipeline (`ci.yml`) |
-| **10** | [Postman Manual API Testing](#experiment-10--postman-manual-api-testing) | Postman | JSON collection covering all 5 CRUD operations & status codes |
-| **11** | [Automated Test Cases](#experiment-11--automated-test-cases-using-pytest) | pytest, Flask Test Client | 8 automated test cases covering edge cases & 404s |
-| **12** | [Monitoring and Logging](#experiment-12--monitoring-and-logging) | Python Logging, Docker, k8s | Structured logging, `docker logs`, `docker stats`, `kubectl logs` |
-| **13** | [Terraform Configurations](#experiment-13--terraform-and-infrastructure-as-code) | Terraform (HCL), Local Provider | IaC lifecycle (`init`, `validate`, `plan`, `apply`, `destroy`) |
-
----
-
-## 🏛️ Architecture Overview
-
-```mermaid
-flowchart TD
-    subgraph Developer Workspace
-        DEV[Developer] -->|Write Code & Tests| APP[app.py & test_app.py]
-        DEV -->|Version Control| GIT[Git Commits / Branches]
-    end
-
-    subgraph CI Pipeline [GitHub Actions]
-        GIT -->|Push main| GHA[GitHub Actions Runner]
-        GHA -->|Step 1| PYTEST[Run pytest -v]
-        GHA -->|Step 2| DOCKER_BUILD[Build Docker Image]
-    end
-
-    subgraph Containerization & Deployment
-        DOCKER_BUILD --> DOCKER_IMG[student-api:latest]
-        DOCKER_IMG -->|Deploy| K8S_DEPLOY[k8s Deployment: 2+ Replicas]
-        K8S_DEPLOY --> K8S_SVC[k8s NodePort Service: Port 80 -> 3000]
-    end
-
-    subgraph Observability & IaC
-        K8S_SVC --> LOGS[Python Logging / Docker Stats / kubectl logs]
-        TF[Terraform CLI] -->|main.tf| IAC[Provision Local Infrastructure]
-    end
-```
-
----
-
-## 📁 Repository Structure
+## 1. Project structure
 
 ```text
-├── .github/
-│   └── workflows/
-│       ├── environment.yml        # Exp 8: GitHub Actions Environment Explorer
-│       └── ci.yml                 # Exp 9: CI Pipeline (pytest + Docker Build)
+x/
+├── app.py
+├── test_app.py
+├── requirements.txt
+├── Dockerfile
+├── .gitignore
 ├── k8s/
-│   ├── deployment.yaml            # Exp 6 & 7: Kubernetes Deployment
-│   └── service.yaml               # Exp 6: Kubernetes NodePort Service
+│   ├── deployment.yaml
+│   └── service.yaml
+├── .github/workflows/
+│   ├── environment.yml
+│   └── ci.yml
 ├── postman/
-│   └── student_api.postman_collection.json # Exp 10: Postman Collection
-├── terraform/
-│   └── main.tf                    # Exp 13: Terraform Infrastructure as Code
-├── .gitignore                     # Exp 3: Git ignore rules (venv, cache, tfstate)
-├── Dockerfile                     # Exp 5: Docker container definition
-├── app.py                         # Exp 1 & 12: Flask REST API with structured logging
-├── deployment.yaml                # Root shortcut for k8s deployment
-├── main.tf                        # Root shortcut for Terraform
-├── requirements.txt               # Project dependencies (Flask, pytest)
-├── service.yaml                   # Root shortcut for k8s service
-├── test_app.py                    # Exp 11: Automated pytest test suite
-└── README.md                      # Complete Lab Manual & Documentation
+│   └── student_api.postman_collection.json
+└── terraform/
+    └── main.tf
 ```
 
----
+## 2. Local setup
 
-## ⚡ Quickstart: Local Setup
-
-### 1. Create and Activate Virtual Environment
 ```bash
-# Clone the repository
 git clone https://github.com/LonelyDreamer005/x.git
 cd x
 
-# Create virtual environment
 python -m venv venv
 
-# Activate (Windows)
-venv\Scripts\activate
+# Windows
+venv\\Scripts\\activate
 
-# Activate (Linux / macOS)
+# Linux / macOS
 source venv/bin/activate
-```
 
-### 2. Install Dependencies
-```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run Automated Tests
-```bash
-pytest -v
-```
+## 3. Run Flask API
 
-### 4. Run the API Server
 ```bash
 python app.py
 ```
-*API will be live at `http://localhost:3000`*
 
----
+The API runs at `http://localhost:5000`.
 
-## 🔬 Detailed Experiment Walkthrough
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/` | API status |
+| GET | `/health` | Health check |
+| GET | `/students` | List students |
+| GET | `/students/<id>` | Get one student |
+| POST | `/students` | Add student |
+| PUT | `/students/<id>` | Update student |
+| DELETE | `/students/<id>` | Delete student |
 
-### Experiment 1 – CRUD REST APIs
-
-**Aim:** Develop a backend application providing CRUD operations through REST APIs using Python and Flask.
-
-#### Endpoints Summary
-
-| Method | Endpoint | Description | Sample Status Code |
-|--------|----------|-------------|--------------------|
-| `GET` | `/` | API status and endpoint directory | `200 OK` |
-| `GET` | `/health` | Application health check probe | `200 OK` |
-| `GET` | `/students` | Retrieve all student records | `200 OK` |
-| `GET` | `/students/<id>` | Retrieve specific student by ID | `200 OK` / `404 Not Found` |
-| `POST` | `/students` | Create a new student record | `201 Created` |
-| `PUT` | `/students/<id>` | Update existing student record | `200 OK` / `404 Not Found` |
-| `DELETE` | `/students/<id>` | Delete student record | `200 OK` / `404 Not Found` |
-
-#### Testing with `curl`
-
-**1. Create a Student:**
-```bash
-curl -X POST http://localhost:3000/students \
-  -H "Content-Type: application/json" \
-  -d "{\"name\": \"Arjun\", \"age\": 20, \"department\": \"CSE\"}"
-```
-
-**2. Get All Students:**
-```bash
-curl -X GET http://localhost:3000/students
-```
-
-**3. Update Student #1:**
-```bash
-curl -X PUT http://localhost:3000/students/1 \
-  -H "Content-Type: application/json" \
-  -d "{\"name\": \"Rahul Sharma\", \"age\": 21}"
-```
-
-**4. Delete Student #1:**
-```bash
-curl -X DELETE http://localhost:3000/students/1
-```
-
----
-
-### Experiment 2 – Git and GitHub
-
-**Aim:** Demonstrate version control with Git and remote repository synchronization using GitHub.
+Example:
 
 ```bash
-# Check repository status
-git status
+curl http://localhost:5000/students
 
-# Stage all files
-git add .
-
-# Commit with a meaningful message
-git commit -m "Implement student CRUD REST API with Flask"
-
-# Verify commit history
-git log --oneline
-
-# Push to remote GitHub repository
-git push origin main
+curl -X POST http://localhost:5000/students \\
+  -H "Content-Type: application/json" \\
+  -d '{"name":"Vinay","age":20,"department":"CSE"}'
 ```
 
----
+## 4. Run tests
 
-### Experiment 3 – Source Code Management
-
-**Aim:** Manage project ignore patterns and branch workflows.
-
-The `.gitignore` excludes:
-* Python bytecode (`__pycache__/`, `*.pyc`)
-* Virtual environments (`venv/`, `.venv/`)
-* Pytest cache (`.pytest_cache/`)
-* Terraform internal states (`.terraform/`, `*.tfstate*`)
-* Generated lab artifacts (`devops.txt`)
-
-#### Branching Workflow:
-```bash
-# Create and switch to a feature branch
-git switch -c feature-api-validation
-
-# Make code changes and commit
-git add .
-git commit -m "Add input validation for student records"
-
-# Switch back to main and merge
-git switch main
-git merge feature-api-validation
-```
-
----
-
-### Experiment 4 – Docker Commands
-
-**Aim:** Practice essential Docker container management commands.
-
-```bash
-# 1. Check Docker engine version
-docker --version
-
-# 2. Pull sample image
-docker pull nginx
-
-# 3. List local images
-docker images
-
-# 4. Run container in detached mode with port mapping
-docker run -d --name web -p 8080:80 nginx
-
-# 5. List running containers
-docker ps
-
-# 6. List all containers (including stopped)
-docker ps -a
-
-# 7. View container logs
-docker logs web
-
-# 8. Inspect container configuration
-docker inspect web
-
-# 9. View live container resource stats
-docker stats --no-stream web
-
-# 10. Stop and remove container
-docker stop web
-docker rm web
-```
-
----
-
-### Experiment 5 – Containerized Application
-
-**Aim:** Containerize the Python Flask application using Docker.
-
-#### Build Image
-```bash
-docker build -t student-api:latest .
-```
-
-#### Run Container
-```bash
-docker run -d --name student-container -p 8080:3000 student-api:latest
-```
-
-#### Verification
-```bash
-# Check container status
-docker ps
-
-# Inspect logs
-docker logs student-container
-
-# Test endpoint
-curl http://localhost:8080/students
-```
-
-#### Clean Up
-```bash
-docker stop student-container
-docker rm student-container
-```
-
----
-
-### Experiment 6 – Integrate Docker and Kubernetes
-
-**Aim:** Deploy the containerized application on a Kubernetes cluster.
-
-#### Apply Manifests
-```bash
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-```
-
-#### Verify Cluster State
-```bash
-# Check Pods
-kubectl get pods
-
-# Check Deployments
-kubectl get deployment
-
-# Check Services
-kubectl get services
-```
-
-*Note for Minikube users: Load the local image into Minikube before applying:*
-```bash
-minikube image load student-api:latest
-minikube service student-service
-```
-
----
-
-### Experiment 7 – Kubernetes Scaling
-
-**Aim:** Scale application replicas declaratively and imperatively.
-
-#### Imperative Scaling
-```bash
-# Scale up to 3 replicas
-kubectl scale deployment student-app --replicas=3
-
-# Verify running pods
-kubectl get pods -l app=student-app
-
-# Scale back to 2 replicas
-kubectl scale deployment student-app --replicas=2
-```
-
-#### Check Pod Logs Across Replicas
-```bash
-kubectl logs -l app=student-app --tail=20
-```
-
----
-
-### Experiment 8 – GitHub Actions Environment
-
-**Aim:** Explore the CI execution environment using GitHub Actions.
-
-Workflow file: `.github/workflows/environment.yml`
-* Checks out repository
-* Provisions Python 3.12 runner
-* Prints system variables, Python/pip version, and directory structure
-* Verifies dependency installation
-
----
-
-### Experiment 9 – Continuous Integration Pipeline
-
-**Aim:** Build an end-to-end CI pipeline that runs automated tests and builds Docker images on push.
-
-Workflow file: `.github/workflows/ci.yml`
-
-Pipeline steps:
-1. **Checkout Code:** Downloads workspace
-2. **Setup Python 3.12:** Prepares Python runtime
-3. **Install Dependencies:** Installs `flask` and `pytest` from `requirements.txt`
-4. **Execute Tests:** Runs `pytest -v` (fails pipeline if any test fails)
-5. **Build Docker Image:** Executes `docker build -t student-api:latest .`
-
----
-
-### Experiment 10 – Postman Manual API Testing
-
-**Aim:** Test all API endpoints manually and validate HTTP status codes.
-
-Import `postman/student_api.postman_collection.json` into Postman.
-
-#### Test Execution Checklist
-- [x] **GET** `http://localhost:3000/students` &rarr; `200 OK`
-- [x] **GET** `http://localhost:3000/students/1` &rarr; `200 OK`
-- [x] **POST** `http://localhost:3000/students` &rarr; `201 Created`
-- [x] **PUT** `http://localhost:3000/students/1` &rarr; `200 OK`
-- [x] **DELETE** `http://localhost:3000/students/1` &rarr; `200 OK`
-- [x] **GET** `http://localhost:3000/students/9999` &rarr; `404 Not Found`
-- [x] **GET** `http://localhost:3000/health` &rarr; `200 OK`
-
----
-
-### Experiment 11 – Automated Test Cases using pytest
-
-**Aim:** Implement unit and integration tests using pytest and Flask test client.
-
-Run tests with verbose output:
 ```bash
 pytest -v
 ```
 
-Expected output:
+## 5. Git commands
+
+```bash
+git status
+git add .
+git commit -m "Update DevOps lab"
+git push origin main
+```
+
+## 6. Docker
+
+Build and run the Flask application:
+
+```bash
+docker build -t vinay1030/night:latest .
+
+docker run -d --name night-app -p 5000:5000 vinay1030/night:latest
+
+docker images
+docker ps
+docker ps -a
+docker logs night-app
+curl http://localhost:5000/health
+```
+
+Container management:
+
+```bash
+docker stop night-app
+docker start night-app
+docker restart night-app
+docker rm -f night-app
+```
+
+Push the image to Docker Hub:
+
+```bash
+docker login
+docker push vinay1030/night:latest
+```
+
+## 7. Kubernetes with Minikube
+
+Start the cluster:
+
+```bash
+minikube start --driver=docker
+kubectl config use-context minikube
+kubectl get nodes
+```
+
+Deploy the YAML files:
+
+```bash
+kubectl apply -f k8s/
+kubectl get deployments
+kubectl get pods
+kubectl get services
+kubectl rollout status deployment/night-app
+```
+
+Access the application in GitHub Codespaces:
+
+```bash
+kubectl port-forward service/night-service 5000:5000 --address 0.0.0.0
+```
+
+Open port `5000` in the Codespaces Ports tab.
+
+Scale and clean up:
+
+```bash
+kubectl scale deployment night-app --replicas=3
+kubectl get pods
+kubectl logs deployment/night-app
+kubectl delete -f k8s/
+minikube stop
+```
+
+## 8. GitHub Actions
+
+- `.github/workflows/environment.yml`: explores the GitHub Actions runner environment.
+- `.github/workflows/ci.yml`: installs Python dependencies, runs pytest and builds the Docker image.
+
+If using a Docker Hub publishing workflow, add these repository secrets:
+
+- `DOCKER_USERNAME`
+- `DOCKER_TOKEN`
+
+A Docker publishing workflow pushes the image to Docker Hub. It does not automatically deploy to the Minikube cluster in Codespaces.
+
+## 9. Postman
+
+Import `postman/student_api.postman_collection.json` into Postman.
+
+Use base URL:
+
 ```text
-test_app.py::test_home PASSED                                            [ 12%]
-test_app.py::test_health PASSED                                          [ 25%]
-test_app.py::test_get_students PASSED                                    [ 37%]
-test_app.py::test_get_single_student PASSED                              [ 50%]
-test_app.py::test_add_student PASSED                                     [ 62%]
-test_app.py::test_update_student PASSED                                  [ 75%]
-test_app.py::test_delete_student PASSED                                  [ 87%]
-test_app.py::test_invalid_student PASSED                                 [100%]
-
-============================== 8 passed in 0.93s ==============================
+http://localhost:5000
 ```
 
----
+Test the GET, POST, PUT and DELETE student endpoints, plus the health endpoint.
 
-### Experiment 12 – Monitoring and Logging
+## 10. Monitoring and logging
 
-**Aim:** Configure structured application logging and monitor container/pod resource metrics.
-
-#### Python Structured Logging
-Configured in `app.py`:
-```python
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-```
-Outputs timestamps, log levels (`INFO`, `WARNING`, `ERROR`), and request context.
-
-#### Docker Monitoring
 ```bash
-# Stream container logs in real time
-docker logs -f student-container
+# Docker
+docker logs night-app
+docker stats night-app
 
-# Live resource usage (CPU, Memory, Network I/O)
-docker stats student-container
+# Kubernetes
+kubectl get pods
+kubectl logs deployment/night-app
+kubectl describe deployment night-app
+kubectl describe service night-service
 ```
 
-#### Kubernetes Monitoring
+## 11. Terraform
+
 ```bash
-# View pod logs
-kubectl logs -l app=student-app
+cd terraform
 
-# Inspect pod health & lifecycle events
-kubectl describe pod -l app=student-app
-```
-
----
-
-### Experiment 13 – Terraform and Infrastructure as Code
-
-**Aim:** Define and provision local infrastructure using HashiCorp Terraform.
-
-Configuration: `terraform/main.tf`
-
-#### Terraform Lifecycle Commands:
-```bash
-# 1. Initialize working directory & download local provider plugin
 terraform init
-
-# 2. Validate configuration syntax
+terraform fmt
 terraform validate
-
-# 3. Preview execution plan
 terraform plan
-
-# 4. Apply changes (creates devops.txt)
-terraform apply -auto-approve
-
-# 5. Inspect generated resource state
+terraform apply
 terraform show
-
-# 6. Destroy infrastructure (removes devops.txt)
-terraform destroy -auto-approve
+terraform destroy
 ```
 
----
+The local provider example creates a local text file. It is a basic Terraform lifecycle exercise, not cloud infrastructure provisioning.
 
-## 🧑‍💻 Technology Mapping (Lab Sheet vs Python Implementation)
+## Notes
 
-| Original Lab Manual (Node.js) | Python Conversion | Purpose |
-|------------------------------|-------------------|---------|
-| Node.js + Express.js | Python 3.12 + Flask | Web Framework & REST APIs |
-| npm + package.json | pip + requirements.txt | Package & Dependency Management |
-| Jest + Supertest | pytest + Flask TestClient | Automated Test Suite |
-| `server.js` | `app.py` | Main Application Entry Point |
-| Node Docker Base Image | `python:3.12-slim` | Containerization Base |
-| console.log | `logging.basicConfig()` | Application Observability |
-| Kubernetes Manifests | Kubernetes Manifests | Container Orchestration (Unchanged) |
-| Terraform (HCL) | Terraform (HCL) | Infrastructure as Code (Unchanged) |
-
----
-
-## 📜 License
-Educational DevOps Lab Coursework. Developed and maintained by [LonelyDreamer005](https://github.com/LonelyDreamer005).
+- Keep the Flask app, Dockerfile and Kubernetes container port aligned on port `5000`.
+- Kubernetes image: `vinay1030/night:latest`. Change it if you publish under another Docker Hub repository.
+- Student records are stored in memory. They reset when the Flask process restarts and are not shared between multiple Kubernetes replicas.
+- This is a learning project, not a production deployment.
